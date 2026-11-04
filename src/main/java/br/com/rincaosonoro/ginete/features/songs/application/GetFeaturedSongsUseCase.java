@@ -12,7 +12,7 @@ import java.util.List;
 public class GetFeaturedSongsUseCase {
     private final SongRepository songRepository;
 
-    public List<Song> execute(Integer limit, Integer offset) {
+    public List<Song> execute(int limit, int offset) {
         return songRepository.findFeatured(limit, offset);
     }
 }

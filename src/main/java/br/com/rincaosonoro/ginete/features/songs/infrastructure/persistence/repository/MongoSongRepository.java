@@ -3,12 +3,10 @@ package br.com.rincaosonoro.ginete.features.songs.infrastructure.persistence.rep
 import br.com.rincaosonoro.ginete.features.artists.domain.ArtistId;
 import br.com.rincaosonoro.ginete.features.songs.domain.Song;
 import br.com.rincaosonoro.ginete.features.songs.domain.SongId;
-import br.com.rincaosonoro.ginete.features.songs.domain.SongNotFoundException;
 import br.com.rincaosonoro.ginete.features.songs.domain.SongRepository;
 import br.com.rincaosonoro.ginete.features.songs.infrastructure.persistence.entity.SongEntity;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
-
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.aggregation.Aggregation;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -18,8 +16,9 @@ import org.springframework.stereotype.Repository;
 import java.net.URI;
 import java.time.Duration;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Repository
 @RequiredArgsConstructor
@@ -27,16 +26,31 @@ public class MongoSongRepository implements SongRepository {
     private final SongEntityRepository songEntityRepository;
     private final MongoTemplate mongoTemplate;
 
+    @Override
+    public Optional<Song> findById(SongId id) {
+        return songEntityRepository.findById(id.value())
+                .map(this::toDomain);
+    }
 
     @Override
-    public List<Song> findAll(Integer limit, Integer offset, String search) {
-        if (limit == null) limit = 15;
-        if (offset == null) offset = 0;
+    public List<Song> findAllById(List<SongId> ids) {
+        var rawIds = ids.stream().map(SongId::value).toList();
 
+        return songEntityRepository.findAllById(rawIds)
+                .stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
+    @Override
+    public List<Song> findAll(int limit, int offset, String search) {
         Query query = new Query();
 
         if (search != null && !search.isBlank()) {
-            query.addCriteria(Criteria.where("name").regex(search, "i"));
+            query.addCriteria(
+                    Criteria.where("name")
+                            .regex(Pattern.quote(search), "i")
+            );
         }
 
         query.skip(offset);
@@ -44,109 +58,81 @@ public class MongoSongRepository implements SongRepository {
 
         query.with(Sort.by(Sort.Direction.ASC, "name"));
 
-        return mongoTemplate.find(query, SongEntity.class)
-                .stream()
-                .map(this::toDomain)
-                .toList();
+        return find(query);
     }
 
     @Override
-    public Song findById(SongId id) {
-        SongEntity songEntity = songEntityRepository.findById(id.value())
-                .orElseThrow(() -> new SongNotFoundException(id));
-
-        return toDomain(songEntity);
-    }
-
-    @Override
-    public List<Song> findAllById(List<String> ids) {
-        return songEntityRepository.findAllById(ids).stream().map(this::toDomain).toList();
-    }
-
-    @Override
-    public List<Song> findRecent(Integer limit, Integer offset) {
-        if (limit == null) limit = 15;
-        if (offset == null) offset = 0;
-
-        Instant oneWeekAgo = Instant.now().minus(7, ChronoUnit.DAYS);
-
+    public List<Song> findRecent(Instant since, int limit, int offset) {
         Query query = new Query();
 
         query.addCriteria(
                 Criteria.where("createdAt")
                         .ne(null)
-                        .gte(oneWeekAgo)
+                        .gte(since)
         );
 
-        query.limit(limit);
         query.skip(offset);
+        query.limit(limit);
 
-        query.with(
-                Sort.by(
-                        Sort.Direction.ASC,
-                        "createdAt"
-                )
-        );
-        return mongoTemplate
-                .find(query, SongEntity.class)
-                .stream()
-                .map(this::toDomain)
-                .toList();
+        query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return find(query);
     }
 
     @Override
-    public List<Song> findFeatured(Integer limit, Integer offset) {
-        if (limit == null) limit = 15;
-        if (offset == null) offset = 0;
-
+    public List<Song> findFeatured(int limit, int offset) {
         Query query = new Query();
 
         query.addCriteria(
-                Criteria.where("featured").is(true)
+                Criteria.where("featured")
+                        .is(true)
         );
 
-        query.limit(limit);
         query.skip(offset);
+        query.limit(limit);
 
-        return mongoTemplate
-                .find(query, SongEntity.class)
-                .stream()
-                .map(this::toDomain)
-                .toList();
+        return find(query);
     }
 
     @Override
     public List<Song> findRandomSongs(int limit) {
-
         Aggregation aggregation = Aggregation.newAggregation(
                 Aggregation.sample(limit)
         );
 
         return mongoTemplate
-                .aggregate(
-                        aggregation,
-                        "songs",
-                        SongEntity.class
-                )
+                .aggregate(aggregation, SongEntity.class, SongEntity.class)
                 .getMappedResults()
                 .stream()
                 .map(this::toDomain)
                 .toList();
     }
 
+    private List<Song> find(Query query) {
+        return mongoTemplate
+                .find(query, SongEntity.class)
+                .stream()
+                .map(this::toDomain)
+                .toList();
+    }
 
     private Song toDomain(SongEntity entity) {
         var song = new Song();
 
         song.setId(new SongId(entity.getId()));
         song.setName(entity.getName());
-        song.setImage(URI.create(entity.getImage()));
-        song.setDuration(Duration.ofSeconds(entity.getDuration()));
-        song.setArtist(new ArtistId(entity.getArtist()));
-        song.setAudio(URI.create(entity.getAudio()));
+        song.setImage(toUri(entity.getImage()));
+        song.setDuration(entity.getDuration() != null ? Duration.ofSeconds(entity.getDuration()) : null);
+        song.setArtist(entity.getArtist() != null ? new ArtistId(entity.getArtist()) : null);
+        song.setAudio(toUri(entity.getAudio()));
+        song.setFeatured(entity.isFeatured());
         song.setCreatedAt(entity.getCreatedAt());
         song.setUpdatedAt(entity.getUpdatedAt());
 
         return song;
+    }
+
+    private static URI toUri(String value) {
+        return value != null ? URI.create(value) : null;
     }
 }

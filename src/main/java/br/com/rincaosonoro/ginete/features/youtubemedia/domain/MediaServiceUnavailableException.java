@@ -1,4 +1,4 @@
-package br.com.rincaosonoro.ginete.features.youtubeMediaGetway.domain;
+package br.com.rincaosonoro.ginete.features.youtubemedia.domain;
 
 import br.com.rincaosonoro.ginete.shared.exception.ServiceUnavailableException;
 

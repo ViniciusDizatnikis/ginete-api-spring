@@ -1,12 +1,14 @@
 package br.com.rincaosonoro.ginete.features.songs.domain;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.Optional;
 
 public interface SongRepository {
-    Song findById(SongId id);
-    List<Song> findAllById(List<String> ids);
-    List<Song> findAll(Integer limit, Integer offset, String search);
-    List<Song> findRecent(Integer limit, Integer offset);
-    List<Song> findFeatured(Integer limit, Integer offset);
+    Optional<Song> findById(SongId id);
+    List<Song> findAllById(List<SongId> ids);
+    List<Song> findAll(int limit, int offset, String search);
+    List<Song> findRecent(Instant since, int limit, int offset);
+    List<Song> findFeatured(int limit, int offset);
     List<Song> findRandomSongs(int limit);
 }

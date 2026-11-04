@@ -1,4 +1,4 @@
-package br.com.rincaosonoro.ginete.features.youtubeMediaGetway.domain;
+package br.com.rincaosonoro.ginete.features.youtubemedia.domain;
 
 public record MediaHealth(
          boolean healthy,

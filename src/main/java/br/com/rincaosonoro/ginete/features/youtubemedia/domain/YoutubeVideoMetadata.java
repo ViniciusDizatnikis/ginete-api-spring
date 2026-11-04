@@ -1,4 +1,4 @@
-package br.com.rincaosonoro.ginete.features.youtubeMediaGetway.domain;
+package br.com.rincaosonoro.ginete.features.youtubemedia.domain;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -23,7 +23,7 @@ public record YoutubeVideoMetadata(
     }
 
     public record AudioFormats(
-            List<Format> audio_only
+            List<Format> audioOnly
     ) {
     }
 

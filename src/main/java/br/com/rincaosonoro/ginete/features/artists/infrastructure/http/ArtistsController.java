@@ -1,7 +1,7 @@
 package br.com.rincaosonoro.ginete.features.artists.infrastructure.http;
 
-import br.com.rincaosonoro.ginete.features.artists.application.GetAllArtistsUseCase;
 import br.com.rincaosonoro.ginete.features.artists.application.FindArtistByIdUseCase;
+import br.com.rincaosonoro.ginete.features.artists.application.GetAllArtistsUseCase;
 import br.com.rincaosonoro.ginete.features.artists.application.GetFeaturedArtistsUseCase;
 import br.com.rincaosonoro.ginete.features.artists.application.GetNewArtistsUseCase;
 import br.com.rincaosonoro.ginete.features.artists.infrastructure.http.response.ArtistResponse;
@@ -23,13 +23,12 @@ public class ArtistsController {
 
     @GetMapping
     public ResponseEntity<List<ArtistResponse>> getArtists(
-            @RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) Integer offset,
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "0") int offset,
             @RequestParam(required = false) String search
     ) {
         var artists = getAllArtistsUseCase.execute(limit, offset, search);
         var artistsResponse = artists.stream().map(ArtistResponse::from).toList();
-
         return ResponseEntity.ok(artistsResponse);
     }
 
@@ -41,8 +40,8 @@ public class ArtistsController {
 
     @GetMapping("/new")
     public ResponseEntity<List<ArtistResponse>> getNewArtists(
-            @RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) Integer offset
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "0") int offset
     ) {
         var newArtists = getNewArtistsUseCase.execute(limit, offset);
         var newArtistsResponse = newArtists.stream().map(ArtistResponse::from).toList();
@@ -50,9 +49,9 @@ public class ArtistsController {
     }
 
     @GetMapping("/featured")
-    public ResponseEntity<List<ArtistResponse>> getFeatured(
-            @RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) Integer offset
+    public ResponseEntity<List<ArtistResponse>> getFeaturedArtists(
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "0") int offset
     ) {
         var featuredArtists = getFeaturedArtistsUseCase.execute(limit, offset);
         var featuredArtistsResponse = featuredArtists.stream().map(ArtistResponse::from).toList();

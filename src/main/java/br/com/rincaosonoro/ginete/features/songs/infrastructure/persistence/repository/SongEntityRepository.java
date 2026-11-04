@@ -2,8 +2,5 @@ package br.com.rincaosonoro.ginete.features.songs.infrastructure.persistence.rep
 
 import br.com.rincaosonoro.ginete.features.songs.infrastructure.persistence.entity.SongEntity;
 import org.springframework.data.mongodb.repository.MongoRepository;
-import org.springframework.stereotype.Repository;
 
-@Repository
-public interface SongEntityRepository extends MongoRepository<SongEntity, String> {
-}
+public interface SongEntityRepository extends MongoRepository<SongEntity, String> {}

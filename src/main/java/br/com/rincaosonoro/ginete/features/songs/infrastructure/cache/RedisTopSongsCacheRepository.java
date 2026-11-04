@@ -1,6 +1,6 @@
 package br.com.rincaosonoro.ginete.features.songs.infrastructure.cache;
 
-import br.com.rincaosonoro.ginete.features.songs.domain.CacheSongsRepository;
+import br.com.rincaosonoro.ginete.features.songs.domain.TopSongsCacheRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Repository;
@@ -12,7 +12,7 @@ import java.util.List;
 
 @Repository
 @RequiredArgsConstructor
-public class RedisSongRepository implements CacheSongsRepository {
+public class RedisTopSongsCacheRepository implements TopSongsCacheRepository {
     private final StringRedisTemplate stringRedisTemplate;
 
     @Override

@@ -17,21 +17,10 @@ public class Song {
     private Duration duration;
     private ArtistId artist;
     private URI audio;
+    private boolean featured;
     private Instant createdAt;
     private Instant updatedAt;
 
-
     public Song() {
-    }
-
-    public Song(SongId id, URI image, String name, Duration duration, ArtistId artist, URI audio, Instant createdAt, Instant updatedAt) {
-        this.id = id;
-        this.image = image;
-        this.name = name;
-        this.duration = duration;
-        this.artist = artist;
-        this.audio = audio;
-        this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
     }
 }

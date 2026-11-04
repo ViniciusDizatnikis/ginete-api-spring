@@ -24,6 +24,8 @@ public class SongEntity {
 
     private String audio;
 
+    private boolean featured;
+
     @CreatedDate
     private Instant createdAt;
 

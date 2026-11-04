@@ -1,8 +1,9 @@
 package br.com.rincaosonoro.ginete.features.songs.application;
 
-import br.com.rincaosonoro.ginete.features.songs.domain.CacheSongsRepository;
 import br.com.rincaosonoro.ginete.features.songs.domain.Song;
+import br.com.rincaosonoro.ginete.features.songs.domain.SongId;
 import br.com.rincaosonoro.ginete.features.songs.domain.SongRepository;
+import br.com.rincaosonoro.ginete.features.songs.domain.TopSongsCacheRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -14,36 +15,38 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor
 public class GetTopSongsUseCase {
-    private final CacheSongsRepository cacheSongsRepository;
+    private static final int TOP_SONGS_LIMIT = 10;
+
+    private final TopSongsCacheRepository topSongsCacheRepository;
     private final SongRepository songRepository;
 
     public List<Song> execute() {
-        var songIds = cacheSongsRepository.get();
+        var songIds = topSongsCacheRepository.get();
 
         if (!songIds.isEmpty()) {
             return findSongs(songIds);
         }
 
-        if (cacheSongsRepository.tryLock()) {
+        if (topSongsCacheRepository.tryLock()) {
 
             try {
-                songIds = cacheSongsRepository.get();
+                songIds = topSongsCacheRepository.get();
 
                 if (songIds.isEmpty()) {
 
-                    var songs = songRepository.findRandomSongs(10);
+                    var songs = songRepository.findRandomSongs(TOP_SONGS_LIMIT);
 
                     songIds = songs.stream()
                             .map(song -> song.getId().value())
                             .toList();
 
-                    cacheSongsRepository.save(songIds);
+                    topSongsCacheRepository.save(songIds);
 
                     return songs;
                 }
 
             } finally {
-                cacheSongsRepository.unlock();
+                topSongsCacheRepository.unlock();
             }
         }
         return findSongs(waitForTopSongs());
@@ -52,7 +55,9 @@ public class GetTopSongsUseCase {
 
     private List<Song> findSongs(List<String> songIds) {
 
-        var songs = songRepository.findAllById(songIds);
+        var songs = songRepository.findAllById(
+                songIds.stream().map(SongId::new).toList()
+        );
 
         return orderByIds(songs, songIds);
     }
@@ -78,7 +83,7 @@ public class GetTopSongsUseCase {
 
         for (int i = 0; i < 10; i++) {
 
-            var songIds = cacheSongsRepository.get();
+            var songIds = topSongsCacheRepository.get();
 
             if (!songIds.isEmpty()) {
                 return songIds;

@@ -12,7 +12,7 @@ import java.util.List;
 public class GetAllSongsUseCase {
     private final SongRepository songRepository;
 
-    public List<Song> execute(Integer limit, Integer offset, String search){
+    public List<Song> execute(int limit, int offset, String search) {
         return songRepository.findAll(limit, offset, search);
     }
 }

@@ -4,13 +4,14 @@ import br.com.rincaosonoro.ginete.features.artists.domain.ArtistId;
 import br.com.rincaosonoro.ginete.features.artists.domain.ArtistNotFoundException;
 import br.com.rincaosonoro.ginete.features.songs.domain.SongId;
 import br.com.rincaosonoro.ginete.features.songs.domain.SongNotFoundException;
-import br.com.rincaosonoro.ginete.features.youtubeMediaGetway.domain.MediaServiceUnavailableException;
+import br.com.rincaosonoro.ginete.features.youtubemedia.domain.MediaServiceUnavailableException;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -110,7 +111,7 @@ class GlobalExceptionHandlerTests {
         }
 
         @GetMapping("/params")
-        String params() {
+        String params(@RequestParam int limit) {
             return "ok";
         }
     }

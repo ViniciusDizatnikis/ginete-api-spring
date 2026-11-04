@@ -1,6 +1,6 @@
-package br.com.rincaosonoro.ginete.features.youtubeMediaGetway.infrastructure.rest.dto;
+package br.com.rincaosonoro.ginete.features.youtubemedia.infrastructure.rest.dto;
 
-import br.com.rincaosonoro.ginete.features.youtubeMediaGetway.domain.YoutubeVideoMetadata;
+import br.com.rincaosonoro.ginete.features.youtubemedia.domain.YoutubeVideoMetadata;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
@@ -40,9 +40,9 @@ public record YoutubeMetadataDTO(
                                         format.audioCodec(),
                                         format.bitrateKbps(),
                                         format.filesizeBytes(),
-                                        format.filesizeIsEstimate(),
-                                        format.hasVideo(),
-                                        format.hasAudio(),
+                                        Boolean.TRUE.equals(format.filesizeIsEstimate()),
+                                        Boolean.TRUE.equals(format.hasVideo()),
+                                        Boolean.TRUE.equals(format.hasAudio()),
                                         format.note()
                                 ))
                                 .toList()

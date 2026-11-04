@@ -2,9 +2,9 @@ package br.com.rincaosonoro.ginete.features.artists.infrastructure.persistence.r
 
 import br.com.rincaosonoro.ginete.features.artists.domain.Artist;
 import br.com.rincaosonoro.ginete.features.artists.domain.ArtistId;
-import br.com.rincaosonoro.ginete.features.artists.domain.ArtistNotFoundException;
 import br.com.rincaosonoro.ginete.features.artists.domain.ArtistRepository;
 import br.com.rincaosonoro.ginete.features.artists.infrastructure.persistence.entity.ArtistEntity;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -13,39 +13,30 @@ import org.springframework.stereotype.Repository;
 
 import java.net.URI;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
+import java.util.regex.Pattern;
 
 @Repository
+@RequiredArgsConstructor
 public class MongoArtistRepository implements ArtistRepository {
-
     private final ArtistEntityRepository artistEntityRepository;
     private final MongoTemplate mongoTemplate;
 
-    public MongoArtistRepository(ArtistEntityRepository artistEntityRepository, MongoTemplate mongoTemplate) {
-        this.artistEntityRepository = artistEntityRepository;
-        this.mongoTemplate = mongoTemplate;
+    @Override
+    public Optional<Artist> findById(ArtistId id) {
+        return artistEntityRepository.findById(id.value())
+                .map(this::toDomain);
     }
 
     @Override
-    public Artist findById(ArtistId id) {
-        ArtistEntity artist = artistEntityRepository.findById(id.value())
-                .orElseThrow(() -> new ArtistNotFoundException(id));
-
-        return toDomain(artist);
-    }
-
-    @Override
-    public List<Artist> findAll(Integer limit, Integer offset, String search) {
-        if (limit == null) limit = 15;
-        if (offset == null) offset = 0;
-
+    public List<Artist> findAll(int limit, int offset, String search) {
         Query query = new Query();
 
         if (search != null && !search.isBlank()) {
             query.addCriteria(
                     Criteria.where("name")
-                            .regex(search, "i")
+                            .regex(Pattern.quote(search), "i")
             );
         }
 
@@ -54,48 +45,29 @@ public class MongoArtistRepository implements ArtistRepository {
 
         query.with(Sort.by(Sort.Direction.ASC, "name"));
 
-        return mongoTemplate.find(query, ArtistEntity.class)
-                .stream()
-                .map(this::toDomain)
-                .toList();
+        return find(query);
     }
 
     @Override
-    public List<Artist> findRecent(Integer limit, Integer offset) {
-        if (limit == null) limit = 15;
-        if (offset == null) offset = 0;
-
-        Instant oneWeekAgo = Instant.now().minus(7, ChronoUnit.DAYS);
-
+    public List<Artist> findRecent(Instant since, int limit, int offset) {
         Query query = new Query();
 
         query.addCriteria(
                 Criteria.where("createdAt")
                         .ne(null)
-                        .gte(oneWeekAgo)
+                        .gte(since)
         );
 
-        query.limit(limit);
         query.skip(offset);
+        query.limit(limit);
 
-        query.with(
-                Sort.by(
-                        Sort.Direction.ASC,
-                        "createdAt"
-                )
-        );
-        return mongoTemplate
-                .find(query, ArtistEntity.class)
-                .stream()
-                .map(this::toDomain)
-                .toList();
+        query.with(Sort.by(Sort.Direction.DESC, "createdAt"));
+
+        return find(query);
     }
 
     @Override
-    public List<Artist> findFeatured(Integer limit, Integer offset) {
-        if (limit == null) limit = 15;
-        if (offset == null) offset = 0;
-
+    public List<Artist> findFeatured(int limit, int offset) {
         Query query = new Query();
 
         query.addCriteria(
@@ -103,9 +75,13 @@ public class MongoArtistRepository implements ArtistRepository {
                         .is(true)
         );
 
-        query.limit(limit);
         query.skip(offset);
+        query.limit(limit);
 
+        return find(query);
+    }
+
+    private List<Artist> find(Query query) {
         return mongoTemplate
                 .find(query, ArtistEntity.class)
                 .stream()
@@ -113,18 +89,21 @@ public class MongoArtistRepository implements ArtistRepository {
                 .toList();
     }
 
-
     private Artist toDomain(ArtistEntity entity) {
         var artist = new Artist();
 
         artist.setId(new ArtistId(entity.getId()));
         artist.setName(entity.getName());
         artist.setFeatured(entity.isFeatured());
-        artist.setImage(URI.create(entity.getImage()));
-        artist.setBanner(URI.create(entity.getBanner()));
+        artist.setImage(toUri(entity.getImage()));
+        artist.setBanner(toUri(entity.getBanner()));
         artist.setCreatedAt(entity.getCreatedAt());
         artist.setUpdatedAt(entity.getUpdatedAt());
 
         return artist;
+    }
+
+    private static URI toUri(String value) {
+        return value != null ? URI.create(value) : null;
     }
 }

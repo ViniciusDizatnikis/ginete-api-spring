@@ -12,7 +12,7 @@ import java.util.List;
 public class GetFeaturedArtistsUseCase {
     private final ArtistRepository artistRepository;
 
-    public List<Artist> execute(Integer limit, Integer offset) {
+    public List<Artist> execute(int limit, int offset) {
         return artistRepository.findFeatured(limit, offset);
     }
 }

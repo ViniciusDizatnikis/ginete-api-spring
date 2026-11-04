@@ -21,7 +21,7 @@ public record SongResponse(
                 song.getName(),
                 song.getImage() != null ? song.getImage().toString() : null,
                 formatDuration(song.getDuration()),
-                song.getArtist().value(),
+                song.getArtist() != null ? song.getArtist().value() : null,
                 song.getAudio() != null ? song.getAudio().toString() : null,
                 song.getCreatedAt() != null
                         ? DATE_FORMATTER.format(song.getCreatedAt())

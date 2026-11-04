@@ -2,6 +2,7 @@ package br.com.rincaosonoro.ginete.features.songs.application;
 
 import br.com.rincaosonoro.ginete.features.songs.domain.Song;
 import br.com.rincaosonoro.ginete.features.songs.domain.SongId;
+import br.com.rincaosonoro.ginete.features.songs.domain.SongNotFoundException;
 import br.com.rincaosonoro.ginete.features.songs.domain.SongRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ public class FindSongByIdUseCase {
     public Song execute(String id) {
         var songId = new SongId(id);
 
-        return songRepository.findById(songId);
+        return songRepository.findById(songId)
+                .orElseThrow(() -> new SongNotFoundException(songId));
     }
 }

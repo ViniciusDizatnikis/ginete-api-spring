@@ -1,7 +1,7 @@
-package br.com.rincaosonoro.ginete.features.youtubeMediaGetway.infrastructure.rest;
+package br.com.rincaosonoro.ginete.features.youtubemedia.infrastructure.rest;
 
-import br.com.rincaosonoro.ginete.features.youtubeMediaGetway.domain.MediaServiceUnavailableException;
-import br.com.rincaosonoro.ginete.features.youtubeMediaGetway.infrastructure.rest.client.YoutubeMediaClient;
+import br.com.rincaosonoro.ginete.features.youtubemedia.domain.MediaServiceUnavailableException;
+import br.com.rincaosonoro.ginete.features.youtubemedia.infrastructure.rest.client.YoutubeMediaClient;
 import feign.FeignException;
 import feign.Request;
 import feign.RetryableException;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-class YoutubeMediaProviderTests {
+class FeignYoutubeMediaGatewayTests {
     private static final Request REQUEST = Request.create(
             Request.HttpMethod.GET,
             "http://youtube-media",
@@ -26,7 +26,7 @@ class YoutubeMediaProviderTests {
     );
 
     private final YoutubeMediaClient client = mock(YoutubeMediaClient.class);
-    private final YoutubeMediaProvider provider = new YoutubeMediaProvider(client);
+    private final FeignYoutubeMediaGateway provider = new FeignYoutubeMediaGateway(client);
 
     @Test
     void connectionFailureOnMetadataBecomesUnavailable() {

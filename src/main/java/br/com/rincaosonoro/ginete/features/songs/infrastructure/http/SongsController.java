@@ -20,9 +20,9 @@ public class SongsController {
     private final GetTopSongsUseCase getTopSongsUseCase;
 
     @GetMapping
-    public ResponseEntity<List<SongSummaryResponse>> findAllSongs(
-            @RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) Integer offset,
+    public ResponseEntity<List<SongSummaryResponse>> getSongs(
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "0") int offset,
             @RequestParam(required = false) String search
     ) {
         var songs = getAllSongsUseCase.execute(limit, offset, search);
@@ -31,25 +31,25 @@ public class SongsController {
     }
 
     @GetMapping("/id/{id}")
-    public ResponseEntity<SongResponse> finById(@PathVariable String id) {
+    public ResponseEntity<SongResponse> getSongById(@PathVariable String id) {
         var song = findSongByIdUseCase.execute(id);
         return ResponseEntity.ok(SongResponse.from(song));
     }
 
     @GetMapping("/new")
     public ResponseEntity<List<SongSummaryResponse>> getNewSongs(
-            @RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) Integer offset
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "0") int offset
     ) {
         var newSongs = getNewSongsUseCase.execute(limit, offset);
-        var songsResponse = newSongs.stream().map(SongSummaryResponse::from).toList();
-        return ResponseEntity.ok(songsResponse);
+        var newSongsResponse = newSongs.stream().map(SongSummaryResponse::from).toList();
+        return ResponseEntity.ok(newSongsResponse);
     }
 
     @GetMapping("/featured")
-    public ResponseEntity<List<SongSummaryResponse>> getFeatured(
-            @RequestParam(required = false) Integer limit,
-            @RequestParam(required = false) Integer offset
+    public ResponseEntity<List<SongSummaryResponse>> getFeaturedSongs(
+            @RequestParam(defaultValue = "15") int limit,
+            @RequestParam(defaultValue = "0") int offset
     ) {
         var featuredSongs = getFeaturedSongsUseCase.execute(limit, offset);
         var featuredSongsResponse = featuredSongs.stream().map(SongSummaryResponse::from).toList();
@@ -57,7 +57,7 @@ public class SongsController {
     }
 
     @GetMapping("/top")
-    public ResponseEntity<List<SongSummaryResponse>> getTopMusics() {
+    public ResponseEntity<List<SongSummaryResponse>> getTopSongs() {
         var topSongs = getTopSongsUseCase.execute();
         var topSongsResponse = topSongs.stream().map(SongSummaryResponse::from).toList();
         return ResponseEntity.ok(topSongsResponse);
