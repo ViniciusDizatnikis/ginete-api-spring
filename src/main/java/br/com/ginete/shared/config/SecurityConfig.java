@@ -2,6 +2,7 @@ package br.com.ginete.shared.config;
 
 import br.com.ginete.features.auth.application.LoginUseCase;
 import br.com.ginete.features.auth.infrastructure.http.AuthController;
+import br.com.ginete.features.dashboard.infrastructure.http.DashboardController;
 import br.com.ginete.features.youtubemedia.infrastructure.http.webhook.DownloadWebhookController;
 import org.jspecify.annotations.NonNull;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,6 +48,8 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, DownloadWebhookController.DOWNLOAD_WEBHOOK_PATH).permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-ui.html", "/v3/api-docs/**", "/error").permitAll()
                         .requestMatchers("/v1/media/**").hasAuthority(ADMIN_AUTHORITY)
+                        // Precisa vir antes do GET /** liberado, senão a rota fica pública
+                        .requestMatchers(DashboardController.ADMIN_PATH_BASE + "/**").hasAuthority(ADMIN_AUTHORITY)
                         .requestMatchers(HttpMethod.GET, "/**").permitAll()
                         .anyRequest().hasAuthority(ADMIN_AUTHORITY)
                 )

@@ -1,20 +1,20 @@
 package br.com.ginete.features.songs.infrastructure.http;
 
-import br.com.ginete.features.songs.application.FindSongByIdUseCase;
-import br.com.ginete.features.songs.application.ListFeaturedSongsUseCase;
-import br.com.ginete.features.songs.application.ListNewSongsUseCase;
-import br.com.ginete.features.songs.application.ListSongsUseCase;
-import br.com.ginete.features.songs.application.ListTopSongsUseCase;
+import br.com.ginete.features.songs.application.*;
 import br.com.ginete.features.songs.infrastructure.http.response.SongResponse;
 import br.com.ginete.features.songs.infrastructure.http.response.SongSummaryResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static br.com.ginete.shared.config.openAPIConfig.TAG_SONGS;
+
 @RestController
 @RequestMapping("/v1/songs")
+@Tag(name = TAG_SONGS)
 @RequiredArgsConstructor
 public class SongsController {
     private final ListSongsUseCase listSongsUseCase;

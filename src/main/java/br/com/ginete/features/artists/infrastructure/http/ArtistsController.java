@@ -5,14 +5,18 @@ import br.com.ginete.features.artists.application.ListArtistsUseCase;
 import br.com.ginete.features.artists.application.ListFeaturedArtistsUseCase;
 import br.com.ginete.features.artists.application.ListNewArtistsUseCase;
 import br.com.ginete.features.artists.infrastructure.http.response.ArtistResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+import static br.com.ginete.shared.config.openAPIConfig.TAG_ARTISTS;
+
 @RestController
 @RequestMapping("/v1/artists")
+@Tag(name = TAG_ARTISTS)
 @RequiredArgsConstructor
 public class ArtistsController {
 

@@ -11,4 +11,5 @@ public interface SongRepository {
     List<Song> findRecent(Instant since, int limit, int offset);
     List<Song> findFeatured(int limit, int offset);
     List<Song> findRandomSongs(int limit);
+    long count();
 }

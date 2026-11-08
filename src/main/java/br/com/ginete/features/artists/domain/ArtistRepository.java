@@ -9,4 +9,5 @@ public interface ArtistRepository {
     List<Artist> findAll(int limit, int offset, String search);
     List<Artist> findRecent(Instant since, int limit, int offset);
     List<Artist> findFeatured(int limit, int offset);
+    long count();
 }

@@ -13,9 +13,10 @@ public class openAPIConfig {
     public static final String BEARER_AUTH = "bearerAuth";
 
     public static final String TAG_AUTH = "Auth";
-    public static final String TAG_MEDIA = "Media";
+    public static final String TAG_MEDIA = "Youtube Media";
     public static final String TAG_SONGS = "Songs";
     public static final String TAG_ARTISTS = "Artists";
+    public static final String TAG_DASHBOARD = "Dashboard";
 
     @Bean
     public OpenAPI openAPI() {
@@ -29,9 +30,10 @@ public class openAPIConfig {
                                 .scheme("bearer")
                                 .bearerFormat("JWT")))
                 .addTagsItem(new Tag().name(TAG_AUTH).description("Login e logout do administrador"))
-                .addTagsItem(new Tag().name(TAG_MEDIA).description("Download de mídia do YouTube (admin)"))
                 .addTagsItem(new Tag().name(TAG_SONGS).description("Músicas"))
-                .addTagsItem(new Tag().name(TAG_ARTISTS).description("Artistas"));
+                .addTagsItem(new Tag().name(TAG_ARTISTS).description("Artistas"))
+                .addTagsItem(new Tag().name(TAG_MEDIA).description("Download de mídia do YouTube (admin)"))
+                .addTagsItem(new Tag().name(TAG_DASHBOARD).description("Estatísticas do painel (admin)"));
     }
 
 }

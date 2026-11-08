@@ -81,6 +81,11 @@ public class MongoArtistRepository implements ArtistRepository {
         return find(query);
     }
 
+    @Override
+    public long count() {
+        return artistEntityRepository.count();
+    }
+
     private List<Artist> find(Query query) {
         return mongoTemplate
                 .find(query, ArtistEntity.class)

@@ -108,6 +108,11 @@ public class MongoSongRepository implements SongRepository {
                 .toList();
     }
 
+    @Override
+    public long count() {
+        return songEntityRepository.count();
+    }
+
     private List<Song> find(Query query) {
         return mongoTemplate
                 .find(query, SongEntity.class)

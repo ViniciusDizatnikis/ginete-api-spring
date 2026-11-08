@@ -8,13 +8,17 @@ import br.com.ginete.features.youtubemedia.domain.MediaHealth;
 import br.com.ginete.features.youtubemedia.domain.YoutubeVideoMetadata;
 import br.com.ginete.features.youtubemedia.infrastructure.http.request.DownloadVideoRequest;
 import br.com.ginete.features.youtubemedia.infrastructure.http.webhook.DownloadWebhookController;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import static br.com.ginete.shared.config.openAPIConfig.TAG_MEDIA;
+
 @RestController
 @RequestMapping("/v1/media")
+@Tag(name = TAG_MEDIA)
 @RequiredArgsConstructor
 public class YoutubeMediaController {
     private final CheckMediaHealthUseCase checkMediaHealthUseCase;
