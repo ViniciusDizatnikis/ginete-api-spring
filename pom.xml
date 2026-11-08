@@ -5,10 +5,10 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>4.1.1</version>
+		<version>4.1.2</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>br.com.rincaosonoro</groupId>
+	<groupId>br.com.ginete</groupId>
 	<artifactId>ginete-api-spring</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ginete-api-spring</name>
@@ -29,6 +29,11 @@
 	<properties>
 		<java.version>21</java.version>
 		<spring-cloud.version>2025.1.4</spring-cloud.version>
+		<!-- Overrides de versões transitivas com CVEs conhecidas (remover quando o Boot gerenciar versões corrigidas) -->
+		<mongodb.version>5.14.0</mongodb.version>
+		<logback.version>1.6.6</logback.version>
+		<json-smart.version>2.6.1</json-smart.version>
+		<bouncycastle.version>1.86</bouncycastle.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -38,6 +43,11 @@
 				<version>${spring-cloud.version}</version>
 				<type>pom</type>
 				<scope>import</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.bouncycastle</groupId>
+				<artifactId>bcprov-jdk18on</artifactId>
+				<version>${bouncycastle.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -52,6 +62,10 @@
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-security-oauth2-resource-server</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-webmvc</artifactId>
 		</dependency>
 		<dependency>
@@ -61,7 +75,7 @@
 		<dependency>
 			<groupId>org.springdoc</groupId>
 			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>3.1.0</version>
+			<version>3.2.0</version>
 		</dependency>
 
 		<dependency>
